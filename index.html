@@ -139,10 +139,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Generate at least 5 questions you might explore using this database of cookie ingredients.</p>
 <ol type="1">
 <li>Which ingredient results in the highest average rating.</li>
-<li></li>
-<li></li>
-<li></li>
-<li></li>
+<li>Are there any missing values, if so how many?</li>
+<li>How do ingredients affect the rating?</li>
+<li>Is there a linear relationship between quantity and rating?</li>
+<li>Do units affect the rating of the recipe?</li>
 </ol>
 </section>
 <section id="skimming-the-data" class="level3">
@@ -483,89 +483,93 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>[1] 1</code></pre>
 </div>
 </div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ingredient_counts <span class="op">=</span> cookies[<span class="st">'Ingredient'</span>].value_counts()</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>ingredients <span class="op">=</span> ingredient_counts <span class="op">/</span> <span class="bu">len</span>(cookies)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>top_20 <span class="op">=</span> ingredients.head(<span class="dv">20</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(top_20)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Ingredient
+egg                           0.106533
+vanilla                       0.098492
+all purpose flour             0.096985
+baking soda                   0.093970
+sugar                         0.087940
+light brown sugar             0.085427
+salt                          0.084422
+butter                        0.080402
+semisweet chocolate chip      0.079899
+baking powder                 0.025126
+walnut                        0.019598
+milk chocolate chip           0.015578
+shortening                    0.014573
+oat                           0.009548
+dark brown sugar              0.009548
+bittersweet chocolate chip    0.008543
+milk                          0.007538
+margarine                     0.005528
+pecan                         0.005528
+nuts                          0.004523
+Name: count, dtype: float64</code></pre>
+</div>
+</div>
 <p>[Part 2] Print out a character string that lists all of the ingredients that do not appear in at least 20 recipes.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>rec_table <span class="ot">&lt;-</span> <span class="fu">table</span>(cookie<span class="sc">$</span>Ingredient)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>rec_table2 <span class="ot">&lt;-</span> <span class="fu">sort</span>(rec_table)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(rec_table2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>rec_table <span class="ot">&lt;-</span> <span class="fu">table</span>(cookie<span class="sc">$</span>Ingredient)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>rec_table2 <span class="ot">&lt;-</span> <span class="fu">sort</span>(rec_table)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>rec_table3 <span class="ot">&lt;-</span> rec_table2[rec_table2<span class="sc">&lt;</span><span class="dv">20</span>]</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>test<span class="ot">&lt;-</span><span class="fu">toString</span>(<span class="fu">names</span>(rec_table3))</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>
-                applesauce                    bourbon 
-                         1                          1 
-          brown rice flour           chocolate raisin 
-                         1                          1 
-           coconut extract                 cookie mix 
-                         1                          1 
-                 coriander                      cream 
-                         1                          1 
-                  espresso                      flour 
-                         1                          1 
-            graham cracker             instant coffee 
-                         1                          1 
-               lemon juice                   macadmia 
-                         1                          1 
-              marshmallows                   molasses 
-                         1                          1 
-                    nestle        peanut butter chips 
-                         1                          1 
-                   raisins                      wheat 
-                         1                          1 
-              white pepper                xanthan gum 
-                         1                          1 
-                  zucchini                    almonds 
-                         1                          2 
-                   coconut                 corn syrup 
-                         2                          2 
-                     honey                     liquer 
-                         2                          2 
-                     maple                     nutmeg 
-                         2                          2 
-             peanut butter                 sour cream 
-                         2                          2 
-                    toffee                   cake mix 
-                         2                          3 
-               crispy rice                     tartar 
-                         3                          3 
-                   vinegar                wheat flour 
-                         3                          3 
-            almond extract                      water 
-                         4                          4 
-                  cinnamon              vegetable oil 
-                         5                          5 
-                cake flour                pudding mix 
-                         6                          6 
-               bread flour                 cornstarch 
-                         7                          7 
-       dark chocolate chip                       nuts 
-                         9                          9 
-      white chocolate chip                  margarine 
-                         9                         11 
-                     pecan                       milk 
-                        11                         15 
-bittersweet chocolate chip           dark brown sugar 
-                        17                         19 
-                       oat                 shortening 
-                        19                         29 
-       milk chocolate chip                     walnut 
-                        31                         39 
-             baking powder   semisweet chocolate chip 
-                        50                        159 
-                    butter                       salt 
-                       160                        168 
-         light brown sugar                      sugar 
-                       170                        175 
-               baking soda          all purpose flour 
-                       187                        193 
-                   vanilla                        egg 
-                       196                        212 </code></pre>
+<pre><code>[1] "applesauce, bourbon, brown rice flour, chocolate raisin, coconut extract, cookie mix, coriander, cream, espresso, flour, graham cracker, instant coffee, lemon juice, macadmia, marshmallows, molasses, nestle, peanut butter chips, raisins, wheat, white pepper, xanthan gum, zucchini, almonds, coconut, corn syrup, honey, liquer, maple, nutmeg, peanut butter, sour cream, toffee, cake mix, crispy rice, tartar, vinegar, wheat flour, almond extract, water, cinnamon, vegetable oil, cake flour, pudding mix, bread flour, cornstarch, dark chocolate chip, nuts, white chocolate chip, margarine, pecan, milk, bittersweet chocolate chip, dark brown sugar, oat"</code></pre>
 </div>
 </div>
-<p>(Delete this note, but you can include data values inline in markdown text by using backticks, at least in R. For instance, here is R’s built in value for pi: 3.1415927. Unfortunately, this doesn’t work in python using the knitr markdown engine, but you can print the list out in python anyways using a code chunk.)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>rec_tab <span class="op">=</span> ingredient_counts[ingredient_counts <span class="op">&lt;</span> <span class="dv">20</span>]</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>rec_str <span class="op">=</span> <span class="st">', '</span>.join(rec_tab.index.tolist())</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(rec_str)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>oat, dark brown sugar, bittersweet chocolate chip, milk, margarine, pecan, nuts, dark chocolate chip, white chocolate chip, bread flour, cornstarch, cake flour, pudding mix, cinnamon, vegetable oil, almond extract, water, cake mix, crispy rice, tartar, vinegar, wheat flour, almonds, coconut, corn syrup, honey, liquer, maple, nutmeg, peanut butter, sour cream, toffee, applesauce, bourbon, brown rice flour, coconut extract, cookie mix, coriander, cream, espresso, flour, graham cracker, instant coffee, lemon juice, macadmia, marshmallows, chocolate raisin, molasses, nestle, peanut butter chips, raisins, wheat, white pepper, xanthan gum, zucchini</code></pre>
+</div>
+</div>
 </section>
 <section id="visualization" class="level3">
 <h3 class="anchored" data-anchor-id="visualization">Visualization</h3>
 <p>Using whatever plotting system you are comfortable with in R or python, see if you can create a couple of useful exploratory data visualizations which address one of the questions you wrote above - or another question which you’ve come up with as you’ve worked on this assignment.</p>
 <p>[Part 1] Create at least one plot (it doesn’t have to be pretty) that showcases an interesting facet of the data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(cookie, <span class="fu">aes</span>(<span class="at">x=</span>Quantity, <span class="at">y=</span>Rating)) <span class="sc">+</span> </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">"Quantity"</span>, <span class="at">y=</span><span class="st">"Rating"</span>, <span class="at">title=</span><span class="st">"Relationship between Quantity and Rating"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 1010 rows containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>plt.scatter(cookies[<span class="st">'Quantity'</span>], cookies[<span class="st">'Rating'</span>], alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Quantity'</span>)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Rating'</span>)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Relationship between Quantity and Rating'</span>)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>plt.show() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
 <p>[Part 2] Write 2-3 sentences about what you can learn from that plot and what directions you might want to investigate from here.</p>
 </section>
 </section>
