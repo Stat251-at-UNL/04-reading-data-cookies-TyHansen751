@@ -34,8 +34,8 @@ Generate at least 5 questions you might explore using this database of cookie in
 1. What is the distribution of ratings across all recipes?
 2. Are there any missing values, if so how many?
 3. How does the number of ingredients in a recipe relate to its rating?
-4. What are the most commonly used ingredients in highly-rated recipes?
-5. Do different measurement units correlate with recipe ratings?
+4. What are the most commonly used ingredients in high rated recipes?
+5. Do different measurement quantities correlate with recipe ratings?
 
 ### Skimming the Data
 One thing we often want to do during EDA is to examine the quality of the data - are there missing values? What quirks might exist in the dataset?
