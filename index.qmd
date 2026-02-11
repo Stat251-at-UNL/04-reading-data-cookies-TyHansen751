@@ -8,24 +8,18 @@ output: html_document
 ---
 
 ## Reading In the Data
-
 First, read in the CSV data of cookie ingredients.
 Make sure that your end-result data has appropriate types for each column - these should match the types provided in the documentation in the README.md file.
-
 ```{r}
 cookie<-read.csv("choc_chip_cookie_ingredients.csv")
 library(reticulate)
 ```
-
 ```{python}
 import pandas as pd
 cookies = pd.read_csv('choc_chip_cookie_ingredients.csv')
-
 ```
 
-
 ## Exploratory Data Analysis
-
 Exploratory data analysis is the process of getting familiar with your dataset. To get started, [this blog post](https://www.mrdbourke.com/a-gentle-introduction-to-exploratory-data-analysis/) provides a nice checklist to get you thinking:
 
 > 1.  What question(s) are you trying to solve (or prove wrong)?
@@ -35,18 +29,15 @@ Exploratory data analysis is the process of getting familiar with your dataset. 
 > 5.  How can you add, change or remove features to get more out of your data?
 
 ### Generating Questions
-
 Generate at least 5 questions you might explore using this database of cookie ingredients.
 
-1. Which ingredient results in the highest average rating.
+1. What is the distribution of ratings across all recipes?
 2. Are there any missing values, if so how many?
-3. How do ingredients affect the rating?
-4. Is there a linear relationship between quantity and rating?
-5. Do units affect the rating of the recipe?
-
+3. How does the number of ingredients in a recipe relate to its rating?
+4. What are the most commonly used ingredients in highly-rated recipes?
+5. Do different measurement units correlate with recipe ratings?
 
 ### Skimming the Data
-
 One thing we often want to do during EDA is to examine the quality of the data - are there missing values? What quirks might exist in the dataset?
 
 The `skimr` package in R, and the similar `skimpy` package in python (which has a much better name, in my opinion), can help provide visual summaries of the data. 
@@ -54,65 +45,56 @@ The `skimr` package in R, and the similar `skimpy` package in python (which has 
 Install both packages, and read the package documentation ([R](https://cran.r-project.org/web/packages/skimr/vignettes/skimr.html), [Python](https://pypi.org/project/skimpy/)).
 
 [Part 1] Use each package and generate summaries of your data that require the use of at least some non-default options in each package's `skim` function.
-
-
 ```{r}
 library(skimr)
 skim(cookie)
 ```
-
 ```{python}
 from skimpy import skim
 skim(cookies)
 ```
 
 [Part 2] Write 1-2 sentences about what you can tell from each summary display you generate. Did you discover anything new about the data?
-I discovered that there are 68 unique ingredients and 1273 unique recipes. There is a lot of misisng data for ratings (1010 NA values). But, the average rating for the cookies is 0.815.
 
+The summary shows that the dataset contains 1990 rows with 209 unique recipes and 68 unique ingredients. The Rating variable has 1010 missing values (51% complete rate), and among rated recipes, the ratings are quite high with a mean of 0.81 and most values clustered between 0.75 and 0.91. The histogram shows most quantities are relatively small.
 ### Generating Tables
-
 Another useful technique for exploratory data analysis is to generate summary tables. 
-You may want to use the `dplyr` package in R (`group_by` or `count` functions), as well as the `groupby` and `count` methods in Pandas. [Python example](https://sparkbyexamples.com/pandas/pandas-groupby-count-examples/), [R example](https://dplyr.tidyverse.org/reference/count.html)
+
+You may want to use the `dplyr` package in R `group_by` or `count` functions), as well as the `groupby` and `count` methods in Pandas. [Python example](https://sparkbyexamples.com/pandas/pandas-groupby-count-examples/), [R example](https://dplyr.tidyverse.org/reference/count.html)
 
 [Part 1] Using R and Python, generate a table that shows what **proportion** of recipes contain each type of ingredient, for the most common 20 ingredients.
-
 ```{r}
-table <- table(cookie$Ingredient)
-table <- prop.table(table)
-table2<-sort(table, decreasing = TRUE)
-head(table2,20)
-sum(table2)
+unique_combos <- unique(cookie[c("Ingredient", "Recipe_Index")])
+recipes_per_ingredient <- table(unique_combos$Ingredient)
+total_recipes <- length(unique(cookie$Recipe_Index))
+proportions <- recipes_per_ingredient / total_recipes
+
+sort(proportions, decreasing = TRUE)[1:20]
 ```
 
 ```{python}
-ingredient_counts = cookies['Ingredient'].value_counts()
-ingredients = ingredient_counts / len(cookies)
-top_20 = ingredients.head(20)
-print(top_20)
+unique_combos = cookies[['Ingredient', 'Recipe_Index']].drop_duplicates()
+recipes_per_ingredient = unique_combos['Ingredient'].value_counts()
+total_recipes = cookies['Recipe_Index'].nunique()
+proportions = recipes_per_ingredient / total_recipes
+proportions.sort_values(ascending=False).head(20)
 ```
 
 [Part 2] Print out a character string that lists all of the ingredients that do not appear in at least 20 recipes.
-
 ```{r}
-rec_table <- table(cookie$Ingredient)
-rec_table2 <- sort(rec_table)
-rec_table3 <- rec_table2[rec_table2<20]
-test<-toString(names(rec_table3))
-test
+rare_ingredients <- names(recipes_per_ingredient[recipes_per_ingredient < 20])
+paste(rare_ingredients, collapse = ", ")
 ```
 
 ```{python}
-rec_tab = ingredient_counts[ingredient_counts < 20]
-rec_str = ', '.join(rec_tab.index.tolist())
-print(rec_str)
+rare_ingredients = recipes_per_ingredient[recipes_per_ingredient < 20].index.tolist()
+', '.join(rare_ingredients)
 ```
 
 ### Visualization
-
 Using whatever plotting system you are comfortable with in R or python, see if you can create a couple of useful exploratory data visualizations which address one of the questions you wrote above - or another question which you've come up with as you've worked on this assignment.
 
 [Part 1] Create at least one plot (it doesn't have to be pretty) that showcases an interesting facet of the data.
-
 ```{r}
 library(ggplot2)
 ggplot(cookie, aes(x=Quantity, y=Rating)) + 
@@ -131,3 +113,5 @@ plt.show()
 ```
 
 [Part 2] Write 2-3 sentences about what you can learn from that plot and what directions you might want to investigate from here.
+
+The scatterplot reveals that there is no clear linear relationship between ingredient quantity and recipe rating, with most ratings clustered in the 0.75-1.0 range regardless of quantity. The majority of ingredients used are in small quantities (0-5 units), with only a few outliers requiring larger amounts up to ~48 units. Moving forward, it would be more productive to investigate which specific ingredients appear most in high rated recipes, or to examine whether the total number of ingredients per recipe has any relationship with rating.

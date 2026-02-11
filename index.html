@@ -138,11 +138,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="generating-questions">Generating Questions</h3>
 <p>Generate at least 5 questions you might explore using this database of cookie ingredients.</p>
 <ol type="1">
-<li>Which ingredient results in the highest average rating.</li>
+<li>What is the distribution of ratings across all recipes?</li>
 <li>Are there any missing values, if so how many?</li>
-<li>How do ingredients affect the rating?</li>
-<li>Is there a linear relationship between quantity and rating?</li>
-<li>Do units affect the rating of the recipe?</li>
+<li>How does the number of ingredients in a recipe relate to its rating?</li>
+<li>What are the most commonly used ingredients in highly-rated recipes?</li>
+<li>Do different measurement units correlate with recipe ratings?</li>
 </ol>
 </section>
 <section id="skimming-the-data" class="level3">
@@ -444,92 +444,85 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 ╰──────────────────────────────────── End ─────────────────────────────────────╯</code></pre>
 </div>
 </div>
-<p>[Part 2] Write 1-2 sentences about what you can tell from each summary display you generate. Did you discover anything new about the data? I discovered that there are 68 unique ingredients and 1273 unique recipes. There is a lot of misisng data for ratings (1010 NA values). But, the average rating for the cookies is 0.815.</p>
-</section>
-<section id="generating-tables" class="level3">
-<h3 class="anchored" data-anchor-id="generating-tables">Generating Tables</h3>
-<p>Another useful technique for exploratory data analysis is to generate summary tables. You may want to use the <code>dplyr</code> package in R (<code>group_by</code> or <code>count</code> functions), as well as the <code>groupby</code> and <code>count</code> methods in Pandas. <a href="https://sparkbyexamples.com/pandas/pandas-groupby-count-examples/">Python example</a>, <a href="https://dplyr.tidyverse.org/reference/count.html">R example</a></p>
+<p>[Part 2] Write 1-2 sentences about what you can tell from each summary display you generate. Did you discover anything new about the data?</p>
+<p>The summary shows that the dataset contains 1990 rows with 209 unique recipes and 68 unique ingredients. The Rating variable has 1010 missing values (51% complete rate), and among rated recipes, the ratings are quite high with a mean of 0.81 and most values clustered between 0.75 and 0.91. The histogram shows most quantities are relatively small. ### Generating Tables Another useful technique for exploratory data analysis is to generate summary tables.</p>
+<p>You may want to use the <code>dplyr</code> package in R <code>group_by</code> or <code>count</code> functions), as well as the <code>groupby</code> and <code>count</code> methods in Pandas. <a href="https://sparkbyexamples.com/pandas/pandas-groupby-count-examples/">Python example</a>, <a href="https://dplyr.tidyverse.org/reference/count.html">R example</a></p>
 <p>[Part 1] Using R and Python, generate a table that shows what <strong>proportion</strong> of recipes contain each type of ingredient, for the most common 20 ingredients.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>table <span class="ot">&lt;-</span> <span class="fu">table</span>(cookie<span class="sc">$</span>Ingredient)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>table <span class="ot">&lt;-</span> <span class="fu">prop.table</span>(table)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>table2<span class="ot">&lt;-</span><span class="fu">sort</span>(table, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(table2,<span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>unique_combos <span class="ot">&lt;-</span> <span class="fu">unique</span>(cookie[<span class="fu">c</span>(<span class="st">"Ingredient"</span>, <span class="st">"Recipe_Index"</span>)])</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>recipes_per_ingredient <span class="ot">&lt;-</span> <span class="fu">table</span>(unique_combos<span class="sc">$</span>Ingredient)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>total_recipes <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">unique</span>(cookie<span class="sc">$</span>Recipe_Index))</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>proportions <span class="ot">&lt;-</span> recipes_per_ingredient <span class="sc">/</span> total_recipes</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(proportions, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
                        egg                    vanilla 
-               0.106532663                0.098492462 
+                0.97607656                 0.93779904 
          all purpose flour                baking soda 
-               0.096984925                0.093969849 
+                0.92344498                 0.89473684 
                      sugar          light brown sugar 
-               0.087939698                0.085427136 
+                0.83253589                 0.81339713 
                       salt                     butter 
-               0.084422111                0.080402010 
+                0.79904306                 0.76076555 
   semisweet chocolate chip              baking powder 
-               0.079899497                0.025125628 
+                0.74641148                 0.23923445 
                     walnut        milk chocolate chip 
-               0.019597990                0.015577889 
+                0.18660287                 0.14832536 
                 shortening           dark brown sugar 
-               0.014572864                0.009547739 
+                0.13875598                 0.09090909 
                        oat bittersweet chocolate chip 
-               0.009547739                0.008542714 
+                0.09090909                 0.08133971 
                       milk                  margarine 
-               0.007537688                0.005527638 
+                0.07177033                 0.05263158 
                      pecan        dark chocolate chip 
-               0.005527638                0.004522613 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(table2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 1</code></pre>
+                0.05263158                 0.04306220 </code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ingredient_counts <span class="op">=</span> cookies[<span class="st">'Ingredient'</span>].value_counts()</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>ingredients <span class="op">=</span> ingredient_counts <span class="op">/</span> <span class="bu">len</span>(cookies)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>top_20 <span class="op">=</span> ingredients.head(<span class="dv">20</span>)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(top_20)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>unique_combos <span class="op">=</span> cookies[[<span class="st">'Ingredient'</span>, <span class="st">'Recipe_Index'</span>]].drop_duplicates()</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>recipes_per_ingredient <span class="op">=</span> unique_combos[<span class="st">'Ingredient'</span>].value_counts()</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>total_recipes <span class="op">=</span> cookies[<span class="st">'Recipe_Index'</span>].nunique()</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>proportions <span class="op">=</span> recipes_per_ingredient <span class="op">/</span> total_recipes</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>proportions.sort_values(ascending<span class="op">=</span><span class="va">False</span>).head(<span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Ingredient
-egg                           0.106533
-vanilla                       0.098492
-all purpose flour             0.096985
-baking soda                   0.093970
-sugar                         0.087940
-light brown sugar             0.085427
-salt                          0.084422
-butter                        0.080402
-semisweet chocolate chip      0.079899
-baking powder                 0.025126
-walnut                        0.019598
-milk chocolate chip           0.015578
-shortening                    0.014573
-oat                           0.009548
-dark brown sugar              0.009548
-bittersweet chocolate chip    0.008543
-milk                          0.007538
-margarine                     0.005528
-pecan                         0.005528
-nuts                          0.004523
+egg                           0.976077
+vanilla                       0.937799
+all purpose flour             0.923445
+baking soda                   0.894737
+sugar                         0.832536
+light brown sugar             0.813397
+salt                          0.799043
+butter                        0.760766
+semisweet chocolate chip      0.746411
+baking powder                 0.239234
+walnut                        0.186603
+milk chocolate chip           0.148325
+shortening                    0.138756
+oat                           0.090909
+dark brown sugar              0.090909
+bittersweet chocolate chip    0.081340
+milk                          0.071770
+margarine                     0.052632
+pecan                         0.052632
+nuts                          0.043062
 Name: count, dtype: float64</code></pre>
 </div>
 </div>
 <p>[Part 2] Print out a character string that lists all of the ingredients that do not appear in at least 20 recipes.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>rec_table <span class="ot">&lt;-</span> <span class="fu">table</span>(cookie<span class="sc">$</span>Ingredient)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>rec_table2 <span class="ot">&lt;-</span> <span class="fu">sort</span>(rec_table)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>rec_table3 <span class="ot">&lt;-</span> rec_table2[rec_table2<span class="sc">&lt;</span><span class="dv">20</span>]</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>test<span class="ot">&lt;-</span><span class="fu">toString</span>(<span class="fu">names</span>(rec_table3))</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>rare_ingredients <span class="ot">&lt;-</span> <span class="fu">names</span>(recipes_per_ingredient[recipes_per_ingredient <span class="sc">&lt;</span> <span class="dv">20</span>])</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">paste</span>(rare_ingredients, <span class="at">collapse =</span> <span class="st">", "</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "applesauce, bourbon, brown rice flour, chocolate raisin, coconut extract, cookie mix, coriander, cream, espresso, flour, graham cracker, instant coffee, lemon juice, macadmia, marshmallows, molasses, nestle, peanut butter chips, raisins, wheat, white pepper, xanthan gum, zucchini, almonds, coconut, corn syrup, honey, liquer, maple, nutmeg, peanut butter, sour cream, toffee, cake mix, crispy rice, tartar, vinegar, wheat flour, almond extract, water, cinnamon, vegetable oil, cake flour, pudding mix, bread flour, cornstarch, dark chocolate chip, nuts, white chocolate chip, margarine, pecan, milk, bittersweet chocolate chip, dark brown sugar, oat"</code></pre>
+<pre><code>[1] "almond extract, almonds, applesauce, bittersweet chocolate chip, bourbon, bread flour, brown rice flour, cake flour, cake mix, chocolate raisin, cinnamon, coconut, coconut extract, cookie mix, coriander, corn syrup, cornstarch, cream, crispy rice, dark brown sugar, dark chocolate chip, espresso, flour, graham cracker, honey, instant coffee, lemon juice, liquer, macadmia, maple, margarine, marshmallows, milk, molasses, nestle, nutmeg, nuts, oat, peanut butter, peanut butter chips, pecan, pudding mix, raisins, sour cream, tartar, toffee, vegetable oil, vinegar, water, wheat, wheat flour, white chocolate chip, white pepper, xanthan gum, zucchini"</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>rec_tab <span class="op">=</span> ingredient_counts[ingredient_counts <span class="op">&lt;</span> <span class="dv">20</span>]</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>rec_str <span class="op">=</span> <span class="st">', '</span>.join(rec_tab.index.tolist())</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(rec_str)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>rare_ingredients <span class="op">=</span> recipes_per_ingredient[recipes_per_ingredient <span class="op">&lt;</span> <span class="dv">20</span>].index.tolist()</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">', '</span>.join(rare_ingredients)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>oat, dark brown sugar, bittersweet chocolate chip, milk, margarine, pecan, nuts, dark chocolate chip, white chocolate chip, bread flour, cornstarch, cake flour, pudding mix, cinnamon, vegetable oil, almond extract, water, cake mix, crispy rice, tartar, vinegar, wheat flour, almonds, coconut, corn syrup, honey, liquer, maple, nutmeg, peanut butter, sour cream, toffee, applesauce, bourbon, brown rice flour, coconut extract, cookie mix, coriander, cream, espresso, flour, graham cracker, instant coffee, lemon juice, macadmia, marshmallows, chocolate raisin, molasses, nestle, peanut butter chips, raisins, wheat, white pepper, xanthan gum, zucchini</code></pre>
+<pre><code>'oat, dark brown sugar, bittersweet chocolate chip, milk, margarine, pecan, nuts, dark chocolate chip, white chocolate chip, bread flour, cornstarch, cake flour, pudding mix, cinnamon, vegetable oil, almond extract, water, cake mix, crispy rice, tartar, vinegar, wheat flour, almonds, coconut, corn syrup, honey, liquer, maple, nutmeg, peanut butter, sour cream, toffee, applesauce, bourbon, brown rice flour, coconut extract, cookie mix, coriander, cream, espresso, flour, graham cracker, instant coffee, lemon juice, macadmia, marshmallows, chocolate raisin, molasses, nestle, peanut butter chips, raisins, wheat, white pepper, xanthan gum, zucchini'</code></pre>
 </div>
 </div>
 </section>
@@ -538,10 +531,10 @@ Name: count, dtype: float64</code></pre>
 <p>Using whatever plotting system you are comfortable with in R or python, see if you can create a couple of useful exploratory data visualizations which address one of the questions you wrote above - or another question which you’ve come up with as you’ve worked on this assignment.</p>
 <p>[Part 1] Create at least one plot (it doesn’t have to be pretty) that showcases an interesting facet of the data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(cookie, <span class="fu">aes</span>(<span class="at">x=</span>Quantity, <span class="at">y=</span>Rating)) <span class="sc">+</span> </span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">"Quantity"</span>, <span class="at">y=</span><span class="st">"Rating"</span>, <span class="at">title=</span><span class="st">"Relationship between Quantity and Rating"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(cookie, <span class="fu">aes</span>(<span class="at">x=</span>Quantity, <span class="at">y=</span>Rating)) <span class="sc">+</span> </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">"Quantity"</span>, <span class="at">y=</span><span class="st">"Rating"</span>, <span class="at">title=</span><span class="st">"Relationship between Quantity and Rating"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Removed 1010 rows containing missing values or values outside the scale range
 (`geom_point()`).</code></pre>
@@ -555,13 +548,13 @@ Name: count, dtype: float64</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>plt.scatter(cookies[<span class="st">'Quantity'</span>], cookies[<span class="st">'Rating'</span>], alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Quantity'</span>)</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Rating'</span>)</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Relationship between Quantity and Rating'</span>)</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>plt.show() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>plt.scatter(cookies[<span class="st">'Quantity'</span>], cookies[<span class="st">'Rating'</span>], alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Quantity'</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Rating'</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Relationship between Quantity and Rating'</span>)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>plt.show() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -571,6 +564,7 @@ Name: count, dtype: float64</code></pre>
 </div>
 </div>
 <p>[Part 2] Write 2-3 sentences about what you can learn from that plot and what directions you might want to investigate from here.</p>
+<p>The scatterplot reveals that there is no clear linear relationship between ingredient quantity and recipe rating, with most ratings clustered in the 0.75-1.0 range regardless of quantity. The majority of ingredients used are in small quantities (0-5 units), with only a few outliers requiring larger amounts up to ~48 units. Moving forward, it would be more productive to investigate which specific ingredients appear most in high rated recipes, or to examine whether the total number of ingredients per recipe has any relationship with rating.</p>
 </section>
 </section>
 
